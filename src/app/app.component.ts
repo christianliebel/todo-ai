@@ -59,8 +59,7 @@ export class AppComponent {
   }
 
   async runPrompt(userPrompt: string) {
-    const availability = await LanguageModel.availability();
-    if (availability == 'unavailable') {
+    if (!('LanguageModel' in window) || await LanguageModel.availability() === 'unavailable') {
       alert('Prompt API is not available in this browser.');
       return;
     }
