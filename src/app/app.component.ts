@@ -41,7 +41,7 @@ export class AppComponent {
   }
 
   async runPrompt(userPrompt: string) {
-    if (self?.ai?.languageModel == null) {
+    if (!('LanguageModel' in window) || await LanguageModel.availability() === 'unavailable') {
       alert('Prompt API is not available in this browser.');
       return;
     }
@@ -52,12 +52,13 @@ export class AppComponent {
       The user will ask questions about their todo list.
       Here's the user's todo list:
       ${this.todos().map(todo => `* ${todo.text} (${todo.done ? 'done' : 'not done'})`).join('\n')}`;
-    const session = await self.ai.languageModel.create({
-      systemPrompt,
+    const session = await LanguageModel.create({
+      initialPrompts: [{ role: 'system', content: systemPrompt }],
     });
     const stream = session.promptStreaming(userPrompt);
+    this.reply.set('');
     for await (const chunk of stream) {
-      this.reply.set(chunk);
+      this.reply.update(reply => reply + chunk);
     }
   }
 }
