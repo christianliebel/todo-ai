@@ -78,7 +78,7 @@ export class AppComponent {
     const stream = session.promptStreaming(userPrompt);
     this.reply.set('');
     for await (const chunk of stream) {
-      this.reply.set(this.reply() + chunk);
+      this.reply.update(reply => reply + chunk);
     }
   }
 }
